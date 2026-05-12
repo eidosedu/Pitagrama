@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabuada de Pitágoras - Eidos</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --primary: #1e88e5;
+            --primary-light: #e3f2fd;
+            --cell-bg: #f9f9f9;
+            --correct: #4caf50;
+            --wrong: #f44336;
+            --header-bg: #f0f4f8;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            width: 100vw;
+            min-height: 100vh;
+        }
+
+        /* Layout Principal: 70% Tabela, 30% Operação */
+        #left-panel {
+            width: 70%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        #right-panel {
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            border-left: 2px solid var(--border-color);
+            position: relative;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        /* Tabela de Pitágoras */
+        #table-container {
+            display: grid;
+            gap: 2px;
+            background: var(--border-color);
+            padding: 2px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .cell {
+            background: var(--cell-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .cell.header {
+            background: var(--header-bg);
+            color: var(--primary);
+            font-weight: bold;
+            cursor: default;
+        }
+
+        .cell.empty-corner {
+            background: transparent;
+            cursor: default;
+        }
+
+        .cell.interactive:active {
+            transform: scale(0.95);
+        }
+
+        .cell.correct {
+            background: var(--correct) !important;
+            color: white;
+        }
+
+        .cell.wrong {
+            background: var(--wrong) !important;
+            color: white;
+        }
+
+        /* Área da Operação (Game) */
+        #game-area {
+            display: none;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .op-container {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        /* Controles Manuais */
+        .ctrl-btn {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 4px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .ctrl-btn:active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .box {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            width: 60px;
+            height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box.result-box {
+            color: transparent;
+            border-color: var(--border-color);
+            transition: color 0.3s;
+        }
+
+        .box.result-box.revealed {
+            color: var(--correct);
+            border-color: var(--correct);
+        }
+
+        /* Layout Horizontal */
+        .layout-horizontal {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .factor-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Layout Vertical - Grid Perfeito */
+        .layout-vertical-grid {
+            display: grid;
+            grid-template-columns: auto auto auto auto;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .layout-vertical-grid .operator {
+            text-align: right;
+            padding-right: 5px;
+        }
+
+        .layout-vertical-grid .line {
+            grid-column: 1 / -1;
+            height: 4px;
+            background: var(--text-color);
+            margin: 5px 0;
+            border-radius: 2px;
+        }
+
+        /* Configurações */
+        #settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            z-index: 10;
+        }
+
+        #modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+
+        #settings-modal {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-width: 400px;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .stepper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .step-btn {
+            width: 35px; height: 35px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .toggle-switch {
+            width: 50px; height: 28px;
+            background: var(--border-color);
+            border-radius: 28px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-knob {
+            width: 20px; height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 4px; left: 4px;
+            transition: 0.3s;
+        }
+
+        .toggle-switch.active .toggle-knob {
+            left: 26px;
+        }
+
+        .close-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="left-panel">
+        <div id="table-container"></div>
+    </div>
+
+    <div id="right-panel">
+        <div id="settings-btn" onclick="openSettings()">⚙️</div>
+        
+        <div id="game-area">
+            <div id="operation-display" class="op-container">
+                </div>
+        </div>
+    </div>
+
+    <div id="modal-overlay">
+        <div id="settings-modal">
+            <h2 style="margin-bottom: 20px; color: var(--primary); text-align: center;">Configurar Tabuada</h2>
+            <div class="setting-row">
+                <span>Linhas (X):</span>
+                <div class="stepper">
+                    <button class="step-btn" onclick="changeSetting('rows', -1)">-</button>
+                    <span id="val-rows">5</span>
+                    <button class="step-btn" onclick="changeSetting('rows', 1)">+</button>
+                </div>
+            </div>
+            <div class="setting-row">
+                <span>Colunas (Y):</span>
+                <div class="stepper">
+                    <button class="step-btn" onclick="changeSetting('cols', -1)">-</button>
+                    <span id="val-cols">5</span>
+                    <button class="step-btn" onclick="changeSetting('cols', 1)">+</button>
+                </div>
+            </div>
+            <div class="setting-row">
+                <span>Modo Game (Pitágoras):</span>
+                <div id="toggle-game" class="toggle-switch active" onclick="toggleSwitch('game')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+            <div class="setting-row">
+                <span>Layout Horizontal:</span>
+                <div id="toggle-layout" class="toggle-switch" onclick="toggleSwitch('layout')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+            <button class="close-btn" onclick="closeSettings()">SALVAR E INICIAR</button>
+        </div>
+    </div>
+
+<script>
+    // Sintetizador de Áudio Sutil
+    let audioCtx;
+    function playSound(type) {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        if (type === 'correct') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        } else {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.15);
+        }
+    }
+
+    const state = {
+        rows: 5,
+        cols: 5,
+        maxLimit: 9,
+        gameActive: true,
+        isHorizontal: false,
+        targetA: 1,
+        targetB: 1,
+        roundResolved: false
+    };
+
+    const tableContainer = document.getElementById('table-container');
+    const opDisplay = document.getElementById('operation-display');
+    const modal = document.getElementById('modal-overlay');
+    const gameArea = document.getElementById('game-area');
+
+    function openSettings() {
+        modal.style.display = 'flex';
+    }
+
+    function changeSetting(prop, dir) {
+        let val = state[prop] + dir;
+        if (val >= 1 && val <= state.maxLimit) {
+            state[prop] = val;
+            document.getElementById(`val-${prop}`).innerText = val;
+            if(prop === 'rows' && state.targetA > val) state.targetA = val;
+            if(prop === 'cols' && state.targetB > val) state.targetB = val;
+        }
+    }
+
+    function toggleSwitch(prop) {
+        const el = document.getElementById(`toggle-${prop}`);
+        el.classList.toggle('active');
+        if (prop === 'game') state.gameActive = el.classList.contains('active');
+        if (prop === 'layout') state.isHorizontal = el.classList.contains('active');
+    }
+
+    function closeSettings() {
+        modal.style.display = 'none';
+        buildTable();
+    }
+
+    function changeFactor(factor, dir) {
+        if (factor === 'A') {
+            let newVal = state.targetA + dir;
+            if (newVal >= 1 && newVal <= state.rows) state.targetA = newVal;
+        } else {
+            let newVal = state.targetB + dir;
+            if (newVal >= 1 && newVal <= state.cols) state.targetB = newVal;
+        }
+        resetRound();
+    }
+
+    function resetRound() {
+        state.roundResolved = false;
+        
+        document.querySelectorAll('.interactive').forEach(el => {
+            el.className = 'cell interactive';
+            el.innerText = el.dataset.r * el.dataset.c; 
+        });
+
+        drawOperation();
+    }
+
+    function drawOperation() {
+        if (state.isHorizontal) {
+            opDisplay.innerHTML = `
+                <div class="layout-horizontal">
+                    <div class="factor-col">
+                        <button class="ctrl-btn" onclick="changeFactor('A', 1)">▲</button>
+                        <div class="box">${state.targetA}</div>
+                        <button class="ctrl-btn" onclick="changeFactor('A', -1)">▼</button>
+                    </div>
+                    <div class="operator">X</div>
+                    <div class="factor-col">
+                        <button class="ctrl-btn" onclick="changeFactor('B', 1)">▲</button>
+                        <div class="box">${state.targetB}</div>
+                        <button class="ctrl-btn" onclick="changeFactor('B', -1)">▼</button>
+                    </div>
+                    <div class="operator">=</div>
+                    <div class="box result-box" id="res-box">${state.targetA * state.targetB}</div>
+                </div>
+            `;
+        } else {
+            // Layout Vertical refeito com Grid perfeito para alinhamento da conta
+            opDisplay.innerHTML = `
+                <div class="layout-vertical-grid">
+                    <div></div> <button class="ctrl-btn" onclick="changeFactor('A', -1)">◀</button>
+                    <div class="box">${state.targetA}</div>
+                    <button class="ctrl-btn" onclick="changeFactor('A', 1)">▶</button>
+                    
+                    <div class="operator">X</div>
+                    <button class="ctrl-btn" onclick="changeFactor('B', -1)">◀</button>
+                    <div class="box">${state.targetB}</div>
+                    <button class="ctrl-btn" onclick="changeFactor('B', 1)">▶</button>
+                    
+                    <div class="line"></div>
+                    
+                    <div></div> <div></div> <div class="box result-box" id="res-box">${state.targetA * state.targetB}</div>
+                    <div></div> </div>
+            `;
+        }
+    }
+
+    function buildTable() {
+        tableContainer.style.display = 'grid';
+        tableContainer.innerHTML = '';
+        tableContainer.style.gridTemplateColumns = `repeat(${state.cols + 1}, 1fr)`;
+        tableContainer.style.gridTemplateRows = `repeat(${state.rows + 1}, 1fr)`;
+
+        // Dimensionamento recalculado para a tabela preencher bem a área de 70% (left-panel)
+        const maxCellSize = 90; 
+        const minCellSize = 40;
+        let availableHeight = window.innerHeight * 0.90;
+        let availableWidth = (window.innerWidth * 0.70) * 0.90; 
+        
+        let cellSizeH = availableHeight / (state.rows + 1);
+        let cellSizeW = availableWidth / (state.cols + 1);
+        let cellSize = Math.min(cellSizeH, cellSizeW, maxCellSize);
+        if(cellSize < minCellSize) cellSize = minCellSize;
+
+        for (let r = 0; r <= state.rows; r++) {
+            for (let c = 0; c <= state.cols; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.style.width = `${cellSize}px`;
+                cell.style.height = `${cellSize}px`;
+
+                if (r === 0 && c === 0) {
+                    cell.classList.add('empty-corner');
+                } else if (r === 0) {
+                    cell.classList.add('header');
+                    cell.innerText = c;
+                } else if (c === 0) {
+                    cell.classList.add('header');
+                    cell.innerText = r;
+                } else {
+                    cell.classList.add('interactive');
+                    cell.dataset.r = r;
+                    cell.dataset.c = c;
+                    cell.innerText = r * c; 
+                    
+                    if (state.gameActive) {
+                        cell.addEventListener('click', () => handleCellClick(cell, r, c));
+                    }
+                }
+                tableContainer.appendChild(cell);
+            }
+        }
+
+        if (state.gameActive) {
+            gameArea.style.display = 'flex';
+            resetRound();
+        } else {
+            gameArea.style.display = 'none';
+        }
+    }
+
+    function handleCellClick(cell, r, c) {
+        if (state.roundResolved || !state.gameActive) return;
+
+        const isCorrect = (r === state.targetA && c === state.targetB) || 
+                          (r === state.targetB && c === state.targetA);
+
+        if (isCorrect) {
+            playSound('correct');
+            cell.classList.add('correct');
+            document.getElementById('res-box').classList.add('revealed');
+            state.roundResolved = true;
+        } else {
+            playSound('wrong');
+            cell.classList.add('wrong');
+        }
+    }
+</script>
+</body>
+</html>
