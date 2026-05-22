@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Algorize</title>
+    <title>Algorize MVP</title>
     <style>
-        /* Importação/Configuração de Fontes */
         @font-face {
             font-family: 'MamaeQueNosFez';
             src: url('mamae_que_nos_fez.ttf') format('truetype');
@@ -31,7 +30,6 @@
             font-family: 'MamaeQueNosFez', 'Times New Roman', serif;
         }
 
-        /* Layout Fixo (Landscape) */
         #portrait-warning {
             display: none;
             position: fixed;
@@ -55,7 +53,6 @@
         }
         .screen.active { display: block; }
 
-        /* Botões */
         .btn-yellow {
             background-color: #FBC02D; color: #ffffff; border: none; border-radius: 4px; padding: 10px 20px;
             font-size: 14pt; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -63,16 +60,19 @@
         }
         .btn-yellow:active { background-color: #F57F17; }
 
+        .btn-icon { background-color: #2196F3; padding: 10px; }
+        .btn-icon:active { background-color: #1976D2; }
+
+        /* Botoes minimalistas, mas com demarcação elegante */
         .btn-paper {
-            background: none; border: none; color: #212121; font-size: 22pt; font-weight: bold;
-            padding: 15px; cursor: pointer; transition: transform 0.1s, opacity 0.2s;
-            display: block; text-align: center; width: auto;
+            background: #ffffff; border: 2px solid #e0e0e0; color: #212121; font-size: 18pt; font-weight: bold;
+            padding: 12px 25px; cursor: pointer; transition: transform 0.1s, border-color 0.2s;
+            display: block; text-align: center; width: 100%; max-width: 450px; border-radius: 8px; margin: 0 auto;
         }
-        .btn-paper:active { transform: scale(0.98); opacity: 0.7; }
+        .btn-paper:active { transform: scale(0.98); border-color: #FBC02D; }
 
         .icon-svg { width: 24px; height: 24px; fill: currentColor; }
 
-        /* Modais */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.3); z-index: 1000; justify-content: center; align-items: center;
@@ -85,21 +85,18 @@
             position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 18pt; cursor: pointer; color: #777;
         }
 
-        /* MENU */
-        #menu-screen { display: flex; flex-direction: column; align-items: center; padding: 40px; }
-        .menu-title { font-size: 36pt; font-weight: 800; margin-bottom: 30px; color: #111111; letter-spacing: -1px; text-align: center;}
-        .menu-options { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        #menu-screen { display: flex; flex-direction: column; align-items: center; padding: 30px; }
+        .menu-title { font-size: 40pt; font-weight: 800; margin-bottom: 25px; color: #111111; letter-spacing: -1px; text-align: center;}
+        .menu-options { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; }
 
-        /* Seletor */
         .header-back { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px; }
-        .task-grid { display: flex; width: 100%; gap: 15px; justify-content: center; }
+        .task-grid { display: flex; width: 100%; gap: 15px; justify-content: center; margin-top: 20px;}
         .task-card {
-            background: rgba(255,255,255,0.7); border: 1px solid #e0e0e0; padding: 20px; border-radius: 6px;
-            text-align: center; cursor: pointer; flex: 1; transition: background 0.2s;
+            background: rgba(255,255,255,0.8); border: 2px solid #e0e0e0; padding: 20px; border-radius: 8px;
+            text-align: center; cursor: pointer; flex: 1; transition: background 0.2s, border-color 0.2s;
         }
-        .task-card:active { background: #f0f0f0; }
+        .task-card:active { background: #fafafa; border-color: #FBC02D; }
 
-        /* Telas de Jogo e Algoritmos */
         #game-container, #gincana-container { display: flex; width: 100%; height: calc(100vh - 90px); }
         .game-split { width: 45%; padding-right: 15px; }
         .game-split.right { width: 55%; border-left: 2px dashed #b0b0b0; padding-left: 15px; padding-right: 0; }
@@ -130,16 +127,16 @@
         
         .drop-slot.slot-borrow {
             position: absolute; left: -14px; bottom: 0px; width: 20px; height: 30px; font-size: 14pt;
-            border-width: 1px; margin: 0; background: rgba(255,255,255,0.8); z-index: 5; border-color:#ccc;
+            border-width: 1px; margin: 0; background: rgba(255,255,255,0.9); z-index: 5; border-color:#ccc;
         }
         .drop-slot.slot-borrow.filled { border-color: #FBC02D; border-style: solid;}
 
-        /* Paleta e Elementos de Drag */
         .numbers-palette { 
             display: flex; gap: 8px; justify-content: center; padding: 10px; 
-            background: rgba(255,255,255,0.8); border-radius: 6px; 
+            background: rgba(255,255,255,0.95); border-radius: 6px; 
+            transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); border: 2px solid #ddd;
         }
-        .palette-bottom { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); z-index: 10;}
+        .palette-bottom { position: absolute; left: 50%; transform: translateX(-50%); z-index: 50;}
         .palette-cell {
             width: 40px; height: 40px; background: #ffffff; border: 1px solid #cccccc; border-radius: 4px;
             display: flex; align-items: center; justify-content: center; font-size: 16pt; font-weight: bold; 
@@ -153,7 +150,6 @@
             transform: translate(-50%, -50%); touch-action: none;
         }
 
-        /* Rascunho / Puzzles */
         .scratch-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .scratch-board { background: rgba(250,250,250,0.8); border: 1px solid #e0e0e0; border-radius: 6px; height: calc(100vh - 150px); padding: 10px; box-sizing: border-box; overflow-y: auto; }
         .puzzle-view { display: none; }
@@ -164,14 +160,12 @@
         .grid-box { width: 30px; height: 30px; border: 1px solid #cccccc; margin: 2px; background: #ffffff; border-radius: 3px; cursor: pointer; }
         .grid-box.marked { background-color: #FFE082; }
 
-        /* Tabela Pitágoras */
         .pitagoras-table { border-collapse: collapse; font-size: 10pt; margin: 0 auto; }
         .pitagoras-table td, .pitagoras-table th { border: 1px solid #cccccc; width: 28px; height: 28px; text-align: center; cursor: pointer; background: #ffffff; }
         .pitagoras-table th { background: #f0f0f0; font-weight: bold; }
         .py-active { background-color: #FFF9C4 !important; }
         .py-intersect { background-color: #FBC02D !important; color: #fff; font-weight: bold; }
 
-        /* Gincana Layout e Timer */
         #gincana-container { justify-content: space-around; padding-bottom: 90px; align-items: flex-start;}
         .gincana-board { 
             flex: 1; border: 1px solid #e0e0e0; background: rgba(255,255,255,0.6); 
@@ -194,7 +188,6 @@
         }
         #gincana-timer-display:active { background: #FFCA28; transform: scale(0.98); }
 
-        /* Utilitários */
         .flex-container { display: flex; gap: 10px; }
         .flex-space { flex-grow: 1; }
         .text-center { text-align: center; }
@@ -213,7 +206,7 @@
         </div>
     </div>
 
-    <!-- TELA 1: MENU -->
+    <!-- TELA 1: MENU (LIMPO) -->
     <div id="screen-menu" class="screen active">
         <div class="menu-title">Algorize</div>
         <div class="menu-options">
@@ -221,10 +214,6 @@
             <button class="btn-paper" onclick="openGincanaMenu()">Modo Gincana</button>
             <button class="btn-paper" onclick="openCustomQuestionsModal()">Lançar Lote</button>
             <button class="btn-paper" onclick="navTo('task-selector', 'online')">Modo Online</button>
-            <div style="display:flex; gap: 20px; margin-top: 15px;">
-                <button class="btn-yellow" onclick="navTo('settings')">Configurações</button>
-                <button class="btn-yellow" onclick="navTo('report')">Relatório</button>
-            </div>
         </div>
     </div>
 
@@ -236,10 +225,10 @@
             <div style="width:80px;"></div>
         </div>
         <div class="task-grid">
-            <div class="task-card" onclick="startTask('soma')"><h3>Adição</h3></div>
-            <div class="task-card" onclick="startTask('subtracao')"><h3>Subtração</h3></div>
-            <div class="task-card" onclick="startTask('multiplicacao')"><h3>Multiplicação</h3></div>
-            <div class="task-card" onclick="startTask('random')"><h3>Aleatório</h3></div>
+            <div class="task-card" onclick="startTask('soma')"><h2>Adição</h2></div>
+            <div class="task-card" onclick="startTask('subtracao')"><h2>Subtração</h2></div>
+            <div class="task-card" onclick="startTask('multiplicacao')"><h2>Multiplicação</h2></div>
+            <div class="task-card" onclick="startTask('random')"><h2>Aleatório</h2></div>
         </div>
     </div>
 
@@ -248,18 +237,23 @@
         <div class="header-back" style="margin-bottom:10px;">
             <button class="btn-yellow" onclick="goBack()">Sair</button>
             <h3 id="game-progress-indicator" style="margin:0;">Questão 1 de 5</h3>
-            <button class="btn-yellow" onclick="validateAnswer(0)">Validar Resposta</button>
+            <div class="flex-container">
+                <button class="btn-yellow btn-icon" onclick="togglePalettePosition()" title="Mudar posição">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>
+                </button>
+                <button class="btn-yellow" onclick="validateAnswer(0)">Validar Resposta</button>
+            </div>
         </div>
 
         <div id="game-container">
             <div class="game-split">
                 <div class="algorithm-workspace" id="algo-workspace-0"></div>
-                <div class="numbers-palette" style="margin-top: 20px; position:absolute; bottom: 0;"></div>
+                <div class="numbers-palette palette-bottom" id="game-palette" style="bottom: 15px;"></div>
             </div>
             <div class="game-split right">
                 <div class="scratch-toolbar">
-                    <button class="btn-yellow" style="padding:5px 12px; font-size:11pt;" onclick="openPuzzleSelector()">Puzzles de Suporte</button>
-                    <span id="active-puzzle-title" style="font-weight:bold; font-size:11pt;">Rascunho Livre</span>
+                    <button class="btn-yellow" style="padding:5px 12px; font-size:11pt;" onclick="openPuzzleSelector()">Puzzles</button>
+                    <span id="active-puzzle-title" style="font-weight:bold; font-size:11pt;">Rascunho</span>
                     <button class="btn-yellow" style="padding:5px 12px; font-size:11pt; background-color:#e0e0e0; color:#333;" onclick="clearScratchpad()">Limpar [X]</button>
                 </div>
                 <div class="scratch-board" id="scratch-board">
@@ -282,7 +276,13 @@
             <div class="flex-space"></div>
             <div id="gincana-timer-display" onclick="toggleTimer()">▶ 00:00</div>
             <div class="flex-space"></div>
-            <button class="btn-yellow" style="background:#4CAF50;" onclick="validateGincana()">Validar Todas</button>
+            
+            <div class="flex-container">
+                <button class="btn-yellow btn-icon" onclick="togglePalettePosition()">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>
+                </button>
+                <button class="btn-yellow" style="background:#4CAF50;" onclick="validateGincana()">Validar Todas</button>
+            </div>
         </div>
         
         <div id="gincana-container">
@@ -311,14 +311,13 @@
                 <div class="gincana-grids" id="gincana-grids-3" style="display:flex; gap:10px; margin-top:5px; transform: scale(0.8); transform-origin: top center;"></div>
             </div>
         </div>
-
-        <div class="numbers-palette palette-bottom" id="gincana-palette"></div>
+        <div class="numbers-palette palette-bottom" id="gincana-palette" style="bottom: 15px;"></div>
     </div>
 
     <script>
         // --- ESTADOS DO APP E TIMER ---
         let screenHistory = ['menu'];
-        let currentMode = 'offline';
+        let currentMode = 'offline_facil'; 
         let currentTaskType = 'soma';
         let isGincana = false;
         let activeQuestions = [];
@@ -330,12 +329,25 @@
         let gincanaTimeLeft = 0;
         let timerRunning = false;
         
+        const palettePositions = ['15px', '120px', '250px'];
+        let palettePosIdx = 0;
+
+        function togglePalettePosition() {
+            palettePosIdx = (palettePosIdx + 1) % palettePositions.length;
+            let newBottom = palettePositions[palettePosIdx];
+            document.querySelectorAll('.numbers-palette').forEach(p => { p.style.bottom = newBottom; });
+        }
+
         // --- DRAG AND DROP (Pointer Events) ---
         const activeDrags = new Map();
-        const offlineDatabase = { soma: [], subtracao: [], multiplicacao: [] };
+        const offlineDatabase = {
+            facil: { soma: [], subtracao: [], multiplicacao: [] },
+            dificil: { soma: [], subtracao: [], multiplicacao: [] }
+        };
+        let onlineDataBuffer = null;
 
         window.onload = function() {
-            generateOfflineDatabase();
+            generateSmartOfflineDatabase();
             buildPalettes();
             buildSomaPuzzles();
             buildGincanaGrids();
@@ -343,39 +355,70 @@
             setupPointerDragAndDrop();
         };
 
-        // --- GERAÇÃO DE BANCO OFFLINE ---
-        function generateOfflineDatabase() {
-            const arrangements = [{op1: 2, op2: 2}, {op1: 2, op2: 3}, {op1: 3, op2: 2}, {op1: 3, op2: 3}];
-            arrangements.forEach(arr => {
-                for(let i=0; i<30; i++) {
-                    let min1 = Math.pow(10, arr.op1-1); let max1 = Math.pow(10, arr.op1) - 1;
-                    let min2 = Math.pow(10, arr.op2-1); let max2 = Math.pow(10, arr.op2) - 1;
-                    
-                    let n1 = Math.floor(Math.random() * (max1 - min1 + 1)) + min1;
-                    let n2 = Math.floor(Math.random() * (max2 - min2 + 1)) + min2;
-                    
-                    offlineDatabase.soma.push({ n1: n1, n2: n2, sign: '+', ans: n1 + n2, level: (arr.op1 <= 2 && arr.op2 <= 2) ? 1 : 2 });
-                    
-                    if(n1 < n2) { let tmp = n1; n1 = n2; n2 = tmp; }
-                    offlineDatabase.subtracao.push({ n1: n1, n2: n2, sign: '-', ans: n1 - n2, level: (arr.op1 <= 2 && arr.op2 <= 2) ? 1 : 2 });
+        // --- GERAÇÃO PROCEDURAL INTELIGENTE (FÁCIL / DIFÍCIL) ---
+        function generateSmartOfflineDatabase() {
+            const checkRegroupSoma = (n1, n2) => {
+                let str1 = n1.toString().split('').reverse();
+                let str2 = n2.toString().split('').reverse();
+                let max = Math.max(str1.length, str2.length);
+                for(let i=0; i<max; i++) {
+                    if((parseInt(str1[i]||0) + parseInt(str2[i]||0)) > 9) return true;
                 }
-            });
-            [2, 3].forEach(digits => {
-                for(let i=0; i<40; i++) {
-                    let min1 = Math.pow(10, digits-1); let max1 = Math.pow(10, digits) - 1;
-                    let n1 = Math.floor(Math.random() * (max1 - min1 + 1)) + min1;
-                    let n2 = Math.floor(Math.random() * 6) + 1; 
-                    offlineDatabase.multiplicacao.push({ n1: n1, n2: n2, sign: 'x', ans: n1 * n2, level: digits === 2 ? 1 : 2 });
+                return false;
+            };
+            const checkRegroupSub = (n1, n2) => {
+                let str1 = n1.toString().split('').reverse();
+                let str2 = n2.toString().split('').reverse();
+                for(let i=0; i<str2.length; i++) {
+                    if(parseInt(str1[i]||0) < parseInt(str2[i]||0)) return true;
                 }
-            });
+                return false;
+            };
+            const checkRegroupMult = (n1, n2) => {
+                let str1 = n1.toString().split('').reverse();
+                for(let i=0; i<str1.length; i++) {
+                    if((parseInt(str1[i]||0) * n2) > 9) return true;
+                }
+                return false;
+            };
+
+            const getRnd = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+            // Gerar 30 de cada
+            while(offlineDatabase.facil.soma.length < 30 || offlineDatabase.dificil.soma.length < 30) {
+                let n1 = getRnd(10, 999); let n2 = getRnd(10, 999);
+                let hasReg = checkRegroupSoma(n1, n2);
+                let q = {n1, sign:'+', n2, ans: n1+n2};
+                if(!hasReg && offlineDatabase.facil.soma.length < 30) offlineDatabase.facil.soma.push(q);
+                if(hasReg && offlineDatabase.dificil.soma.length < 30) offlineDatabase.dificil.soma.push(q);
+            }
+            while(offlineDatabase.facil.subtracao.length < 30 || offlineDatabase.dificil.subtracao.length < 30) {
+                let n1 = getRnd(10, 999); let n2 = getRnd(10, 999);
+                if(n1 < n2) { let t=n1; n1=n2; n2=t; }
+                let hasReg = checkRegroupSub(n1, n2);
+                let q = {n1, sign:'-', n2, ans: n1-n2};
+                if(!hasReg && offlineDatabase.facil.subtracao.length < 30) offlineDatabase.facil.subtracao.push(q);
+                if(hasReg && offlineDatabase.dificil.subtracao.length < 30) offlineDatabase.dificil.subtracao.push(q);
+            }
+            while(offlineDatabase.facil.multiplicacao.length < 30 || offlineDatabase.dificil.multiplicacao.length < 30) {
+                let n1 = getRnd(10, 999); let n2 = getRnd(2, 6);
+                let hasReg = checkRegroupMult(n1, n2);
+                let q = {n1, sign:'x', n2, ans: n1*n2};
+                if(!hasReg && offlineDatabase.facil.multiplicacao.length < 30) offlineDatabase.facil.multiplicacao.push(q);
+                if(hasReg && offlineDatabase.dificil.multiplicacao.length < 30) offlineDatabase.dificil.multiplicacao.push(q);
+            }
         }
 
-        // --- NAVEGAÇÃO E MODAIS ---
+        // --- NAVEGAÇÃO ---
         function navTo(screenId, mode = null) {
             if (mode) currentMode = mode;
             if (screenId === 'task-selector') {
-                const titleEl = document.getElementById('task-mode-title');
-                titleEl.innerText = `Seletor de Tarefas (${isGincana ? 'Gincana' : 'Prática'}) - ${currentMode.toUpperCase()}`;
+                let mTitle = "";
+                if(currentMode === 'offline_facil') mTitle = "Fácil";
+                if(currentMode === 'offline_dificil') mTitle = "Difícil";
+                if(currentMode === 'personalizado') mTitle = "Lote";
+                if(currentMode === 'online') mTitle = "Online";
+                document.getElementById('task-mode-title').innerText = `Tarefa: ${mTitle}`;
             }
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             const target = document.getElementById('screen-' + screenId);
@@ -386,11 +429,7 @@
             if (screenHistory.length > 1) {
                 screenHistory.pop();
                 let prev = screenHistory[screenHistory.length - 1];
-                if(prev === 'menu') { 
-                    isGincana = false; 
-                    clearInterval(gincanaTimer); 
-                    timerRunning = false;
-                }
+                if(prev === 'menu') { isGincana = false; clearInterval(gincanaTimer); timerRunning = false; }
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
                 document.getElementById('screen-' + prev).classList.add('active');
             } else {
@@ -420,14 +459,14 @@
             `);
         }
 
-        // --- LANÇAR LOTE ---
+        // --- MODAIS MENU ---
         function openCustomQuestionsModal() {
             openModal(`
                 <h3 style="margin-top:0;">Lançar Lote</h3>
                 <p style="font-size:10pt; color:#666;">Exemplo: 12+34=46, 125-25=100, 24x3=72</p>
                 <textarea id="custom-batch-input" style="width:100%; height:120px; font-size:12pt; box-sizing:border-box; margin-bottom:15px; padding:8px;" placeholder="Insira o lote..."></textarea>
                 <div class="flex-container">
-                    <button class="btn-yellow" style="background:#ccc; color:#333;" onclick="closeModal()">Cancelar</button>
+                    <button class="btn-paper" style="padding:10px; font-size:14pt;" onclick="closeModal()">Cancelar</button>
                     <div class="flex-space"></div>
                     <button class="btn-yellow" onclick="saveCustomQuestionsBatch()">Salvar Lote</button>
                 </div>
@@ -444,42 +483,47 @@
             });
             if(parsed.length > 0) {
                 localStorage.setItem('custom_questions', JSON.stringify(parsed));
-                showNativeAlert("Sucesso", "Lote salvo com sucesso! Ele estará disponível nas opções 'Lote Personalizado' dos modos Prática ou Gincana.");
+                showNativeAlert("Sucesso", "Lote salvo com sucesso! Acesse pelas opções 'Lote Personalizado'.");
             } else {
-                showNativeAlert("Erro", "Nenhuma questão validada. Verifique o formato.");
+                showNativeAlert("Erro", "Formato inválido.");
             }
         }
 
-        // --- PRÁTICA MENU ---
+        function setMode(mode) {
+            closeModal();
+            navTo('task-selector', mode);
+        }
+
         function openPraticaMenu() {
             isGincana = false;
             openModal(`
-                <h3 class="text-center">Escolher Fonte (Prática)</h3>
-                <div class="flex-container" style="flex-direction:column; gap:15px; margin-top:20px;">
-                    <button class="btn-paper" style="width:100%; border:1px solid #ccc; border-radius:6px; font-size:14pt;" onclick="closeModal(); navTo('task-selector', 'offline')">Questões do app</button>
-                    <button class="btn-paper" style="width:100%; border:1px solid #ccc; border-radius:6px; font-size:14pt;" onclick="closeModal(); navTo('task-selector', 'personalizado')">Lote Personalizado</button>
+                <h3 class="text-center">Escolher Fonte</h3>
+                <div class="flex-container" style="flex-direction:column; gap:10px; margin-top:15px;">
+                    <button class="btn-paper" style="font-size:14pt; padding:10px;" onclick="setMode('offline_facil')">App: Fácil (Sem Reagrupamento)</button>
+                    <button class="btn-paper" style="font-size:14pt; padding:10px;" onclick="setMode('offline_dificil')">App: Difícil (Com Reagrupamento)</button>
+                    <button class="btn-paper" style="font-size:14pt; padding:10px;" onclick="setMode('personalizado')">Lote Personalizado</button>
                 </div>
             `);
         }
 
-        // --- GINCANA MENU ---
         function openGincanaMenu() {
             isGincana = true;
             openModal(`
                 <h3 class="text-center">Configurar Gincana</h3>
-                <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:20px;">
+                <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:15px;">
                     <b style="font-size:12pt; color:#555;">Tempo:</b>
                     <input type="number" id="gincana-min" value="2" min="0" style="width:50px; font-size:14pt; text-align:center; border:1px solid #ccc; border-radius:4px;"> m
                     <input type="number" id="gincana-sec" value="0" min="0" max="59" style="width:50px; font-size:14pt; text-align:center; border:1px solid #ccc; border-radius:4px;"> s
                 </div>
-                <div class="flex-container" style="flex-direction:column; gap:15px;">
-                    <button class="btn-paper" style="width:100%; border:1px solid #ccc; border-radius:6px; font-size:14pt;" onclick="setGincanaMode('offline')">Questões do app</button>
-                    <button class="btn-paper" style="width:100%; border:1px solid #ccc; border-radius:6px; font-size:14pt;" onclick="setGincanaMode('personalizado')">Lote Personalizado</button>
+                <div class="flex-container" style="flex-direction:column; gap:10px;">
+                    <button class="btn-paper" style="font-size:14pt; padding:10px;" onclick="setGincanaConfig('offline_facil')">App: Fácil</button>
+                    <button class="btn-paper" style="font-size:14pt; padding:10px;" onclick="setGincanaConfig('offline_dificil')">App: Difícil</button>
+                    <button class="btn-paper" style="font-size:14pt; padding:10px;" onclick="setGincanaConfig('personalizado')">Lote Personalizado</button>
                 </div>
             `);
         }
 
-        function setGincanaMode(mode) {
+        function setGincanaConfig(mode) {
             let m = parseInt(document.getElementById('gincana-min').value) || 0;
             let s = parseInt(document.getElementById('gincana-sec').value) || 0;
             selectedGincanaTime = (m * 60) + s;
@@ -488,23 +532,39 @@
             navTo('task-selector', mode);
         }
 
+        window.receberTextoDoKodular = function(texto) {
+            try {
+                onlineDataBuffer = JSON.parse(texto);
+                closeModal(); startTask(currentTaskType);
+            } catch (e) { showNativeAlert("Erro", "Falha ao processar dados da planilha."); }
+        };
+
         // --- START TASK ---
         function startTask(type) {
             currentTaskType = type;
             let pool = [];
+            let qtd = isGincana ? 3 : 5;
             
-            if (currentMode === 'offline') {
-                if (type === 'soma' || type === 'random') pool = pool.concat(offlineDatabase.soma);
-                if (type === 'subtracao' || type === 'random') pool = pool.concat(offlineDatabase.subtracao);
-                if (type === 'multiplicacao' || type === 'random') pool = pool.concat(offlineDatabase.multiplicacao);
+            if (currentMode === 'online') {
+                if (!onlineDataBuffer) {
+                    showNativeAlert("Sincronizando...", "Buscando dados da planilha...");
+                    sendToKodular("ONLINE_REQUEST:", type);
+                    return; 
+                } else { pool = onlineDataBuffer; onlineDataBuffer = null; }
+            } else if (currentMode === 'offline_facil') {
+                if (type === 'soma' || type === 'random') pool = pool.concat(offlineDatabase.facil.soma);
+                if (type === 'subtracao' || type === 'random') pool = pool.concat(offlineDatabase.facil.subtracao);
+                if (type === 'multiplicacao' || type === 'random') pool = pool.concat(offlineDatabase.facil.multiplicacao);
+            } else if (currentMode === 'offline_dificil') {
+                if (type === 'soma' || type === 'random') pool = pool.concat(offlineDatabase.dificil.soma);
+                if (type === 'subtracao' || type === 'random') pool = pool.concat(offlineDatabase.dificil.subtracao);
+                if (type === 'multiplicacao' || type === 'random') pool = pool.concat(offlineDatabase.dificil.multiplicacao);
             } else if (currentMode === 'personalizado') {
                 pool = JSON.parse(localStorage.getItem('custom_questions') || '[]');
                 if(type !== 'random') pool = pool.filter(q => (type === 'soma' && q.sign === '+') || (type === 'subtracao' && q.sign === '-') || (type === 'multiplicacao' && q.sign === 'x'));
-            } else if (currentMode === 'online') {
-                pool = offlineDatabase.soma.slice(0, 15); 
+                if (pool.length === 0) { showNativeAlert("Lote Vazio", "Não há questões suficientes no lote."); return; }
+                while(pool.length < qtd) pool = pool.concat(pool);
             }
-
-            if(pool.length < 5) pool = pool.concat(offlineDatabase.soma);
 
             activeQuestions = [];
             let tempPool = [...pool];
@@ -521,11 +581,8 @@
                     if(q.sign !== q1.sign) return false;
                     let mLen1 = String(q.n1).length;
                     let mLen2 = String(q.n2).length;
-                    if(q.sign === 'x') {
-                        return (mLen1 === len1) && (Math.abs(q.n2 - q1.n2) <= 1);
-                    } else {
-                        return (mLen1 === len1) && (mLen2 === len2);
-                    }
+                    if(q.sign === 'x') { return (mLen1 === len1) && (Math.abs(q.n2 - q1.n2) <= 1); } 
+                    else { return (mLen1 === len1) && (mLen2 === len2); }
                 });
 
                 for(let i = 0; i < 2; i++) {
@@ -535,11 +592,8 @@
                     } else if (tempPool.length > 0) {
                         let mIdx = Math.floor(Math.random() * tempPool.length);
                         activeQuestions.push(tempPool.splice(mIdx, 1)[0]);
-                    } else {
-                        activeQuestions.push(offlineDatabase.soma[0]);
-                    }
+                    } else { activeQuestions.push(q1); }
                 }
-
                 sessionAnswers = [];
                 navTo('gincana');
                 loadGincanaBoards();
@@ -560,7 +614,6 @@
         // --- CONSTRUTOR VISUAL ---
         function loadQuestion(qIndex, workspaceIndex) {
             if(!isGincana) document.getElementById('game-progress-indicator').innerText = `Questão ${qIndex + 1} de 5`;
-            
             const q = activeQuestions[qIndex];
             if(!q) return;
 
@@ -583,28 +636,22 @@
                 let pad = document.createElement('div'); pad.className = "algo-cell"; pad.style.visibility = "hidden"; row1.appendChild(pad); 
             }
             for(let i=0; i<s1.length; i++) {
-                let cellWrapper = document.createElement('div');
-                cellWrapper.className = "algo-cell-wrapper";
-
+                let cellWrapper = document.createElement('div'); cellWrapper.className = "algo-cell-wrapper";
                 let borrowSlot = document.createElement('div');
                 borrowSlot.className = "drop-slot slot-borrow math-number";
                 borrowSlot.setAttribute('data-slot-type', 'borrow');
 
                 let mainCell = document.createElement('div');
-                mainCell.className = "algo-cell math-number";
-                mainCell.innerText = s1[i];
+                mainCell.className = "algo-cell math-number"; mainCell.innerText = s1[i];
                 mainCell.onclick = function() { this.classList.toggle('crossed-out'); };
 
                 if(q.sign === '-') cellWrapper.appendChild(borrowSlot);
-                
-                cellWrapper.appendChild(mainCell);
-                row1.appendChild(cellWrapper);
+                cellWrapper.appendChild(mainCell); row1.appendChild(cellWrapper);
             }
             workspace.appendChild(row1);
 
             let row2 = document.createElement('div'); row2.className = "algo-row";
             let signSpan = document.createElement('span'); signSpan.className = "algo-sign"; signSpan.innerText = q.sign; row2.appendChild(signSpan);
-            
             for(let i=0; i < maxLen - s2.length; i++) { 
                 let pad = document.createElement('div'); pad.className = "algo-cell"; pad.style.visibility = "hidden"; row2.appendChild(pad); 
             }
@@ -637,24 +684,13 @@
 
         function toggleTimer() {
             if(timerRunning) {
-                clearInterval(gincanaTimer);
-                timerRunning = false;
-                updateTimerDisplay();
+                clearInterval(gincanaTimer); timerRunning = false; updateTimerDisplay();
             } else {
                 if(gincanaTimeLeft <= 0) return;
-                timerRunning = true;
-                updateTimerDisplay();
-                
+                timerRunning = true; updateTimerDisplay();
                 gincanaTimer = setInterval(() => {
-                    gincanaTimeLeft--;
-                    updateTimerDisplay();
-                    
-                    if(gincanaTimeLeft <= 0) {
-                        clearInterval(gincanaTimer);
-                        timerRunning = false;
-                        updateTimerDisplay();
-                        validateGincana(true); // Tempo esgotou, valida automaticamente
-                    }
+                    gincanaTimeLeft--; updateTimerDisplay();
+                    if(gincanaTimeLeft <= 0) { validateGincana(true); }
                 }, 1000);
             }
         }
@@ -662,17 +698,13 @@
         function loadGincanaBoards() {
             for(let i=0; i<3; i++) { loadQuestion(i, i+1); }
             document.querySelectorAll('.gincana-board-header').forEach(h => h.style.backgroundColor = 'transparent');
-            clearInterval(gincanaTimer);
-            timerRunning = false;
-            gincanaTimeLeft = selectedGincanaTime;
-            updateTimerDisplay();
+            clearInterval(gincanaTimer); timerRunning = false; gincanaTimeLeft = selectedGincanaTime; updateTimerDisplay();
         }
 
         function clearWorkspace(boardId) {
             let ws = document.getElementById('algo-workspace-' + boardId);
             ws.querySelectorAll('.drop-slot').forEach(s => { s.innerText = ""; s.classList.remove('filled'); });
             ws.querySelectorAll('.algo-cell.crossed-out').forEach(c => c.classList.remove('crossed-out'));
-            
             let gridCont = document.getElementById('gincana-grids-' + boardId);
             if(gridCont) gridCont.querySelectorAll('.grid-box.marked').forEach(b => b.classList.remove('marked'));
         }
@@ -681,9 +713,7 @@
         function checkWorkspaceAnswer(wsId, correctAnswer) {
             let answerSlots = document.querySelectorAll(`#algo-workspace-${wsId} .drop-slot[data-slot-type="answer"]`);
             let userAnsStr = "";
-            answerSlots.forEach(slot => { 
-                if(slot.innerText) userAnsStr += slot.innerText; 
-            });
+            answerSlots.forEach(slot => { if(slot.innerText) userAnsStr += slot.innerText; });
             return parseInt(userAnsStr) === correctAnswer;
         }
 
@@ -693,60 +723,36 @@
                 openModal(`<div class="text-center"><h2 style="color: #4CAF50;">Resposta Correta!</h2>
                     <p style="font-size:14pt;">Muito bem!</p>
                     <button class="btn-yellow mt-20" onclick="closeModal(); advancePracticeQuestion();">Próxima Questão</button></div>`);
-            } else {
-                showNativeAlert("Tente Outra Vez", "Verifique as ordens e tente novamente.");
-            }
+            } else { showNativeAlert("Tente Outra Vez", "Verifique as ordens e tente novamente."); }
         }
 
         function advancePracticeQuestion() {
             currentQuestionIdx++;
-            if(currentQuestionIdx < 5) {
-                loadQuestion(currentQuestionIdx, 0);
-            } else {
-                showNativeAlert("Tarefa Concluída", "Você finalizou o lote de exercícios.");
-                goBack();
-            }
+            if(currentQuestionIdx < 5) { loadQuestion(currentQuestionIdx, 0); } 
+            else { showNativeAlert("Tarefa Concluída", "Você finalizou o lote de exercícios."); goBack(); }
         }
 
         function validateGincana(isTimeout = false) {
-            clearInterval(gincanaTimer);
-            timerRunning = false;
-            updateTimerDisplay();
+            clearInterval(gincanaTimer); timerRunning = false; updateTimerDisplay();
 
-            let correctTeams = [];
-            let wrongTeams = [];
-
+            let correctTeams = []; let wrongTeams = [];
             for(let i=1; i<=3; i++) {
                 let isCorrect = checkWorkspaceAnswer(i, activeQuestions[i-1].ans);
                 let teamName = document.querySelectorAll('.gincana-team-name')[i-1].value || `Equipe ${i}`;
                 let boardHeader = document.getElementById('gincana-header-' + i);
 
-                if(isCorrect) {
-                    correctTeams.push(teamName);
-                    boardHeader.style.backgroundColor = '#C8E6C9';
-                } else {
-                    wrongTeams.push(teamName);
-                    boardHeader.style.backgroundColor = '#FFCDD2';
-                }
+                if(isCorrect) { correctTeams.push(teamName); boardHeader.style.backgroundColor = '#C8E6C9'; } 
+                else { wrongTeams.push(teamName); boardHeader.style.backgroundColor = '#FFCDD2'; }
             }
 
             let resultHtml = "";
-            if(correctTeams.length === 3) {
-                resultHtml = `<h2 style="color: #4CAF50;">Fenomenal!</h2><p style="font-size:14pt;">Todas as equipes acertaram!</p>`;
-            } else if (correctTeams.length === 0) {
-                resultHtml = `<h2 style="color: #D32F2F;">Que pena!</h2><p style="font-size:14pt;">Nenhuma equipe acertou. ${isTimeout ? 'O tempo acabou.' : 'As respostas estão incorretas.'}</p>`;
-            } else {
-                resultHtml = `<h2>Fim de Jogo!</h2>
-                              <p style="font-size:14pt; color:#4CAF50;"><b>Acertaram:</b> ${correctTeams.join(', ')}</p>
-                              <p style="font-size:12pt; color:#D32F2F;"><b>Erraram:</b> ${wrongTeams.join(', ')}</p>`;
+            if(correctTeams.length === 3) { resultHtml = `<h2 style="color: #4CAF50;">Fenomenal!</h2><p style="font-size:14pt;">Todas as equipes acertaram!</p>`; } 
+            else if (correctTeams.length === 0) { resultHtml = `<h2 style="color: #D32F2F;">Que pena!</h2><p style="font-size:14pt;">Nenhuma equipe acertou. ${isTimeout ? 'O tempo acabou.' : 'Respostas incorretas.'}</p>`; } 
+            else {
+                resultHtml = `<h2>Fim de Jogo!</h2><p style="font-size:14pt; color:#4CAF50;"><b>Acertaram:</b> ${correctTeams.join(', ')}</p><p style="font-size:12pt; color:#D32F2F;"><b>Erraram:</b> ${wrongTeams.join(', ')}</p>`;
             }
 
-            openModal(`
-                <div class="text-center">
-                    ${resultHtml}
-                    <button class="btn-yellow mt-20" onclick="closeModal(); goBack();">Sair da Gincana</button>
-                </div>
-            `);
+            openModal(`<div class="text-center">${resultHtml}<button class="btn-yellow mt-20" onclick="closeModal(); goBack();">Sair</button></div>`);
         }
 
         // --- POINTER EVENTS DRAG AND DROP ---
@@ -758,73 +764,53 @@
 
         function setupPointerDragAndDrop() {
             document.addEventListener('touchmove', function(e) {
-                if(e.target.closest('.scratch-board, .modal-box, input')) return; 
-                e.preventDefault();
+                if(e.target.closest('.scratch-board, .modal-box, input')) return; e.preventDefault();
             }, { passive: false });
 
             const draggables = document.querySelectorAll('.palette-cell');
-            
             draggables.forEach(el => {
                 el.onpointerdown = function(e) {
                     let dragValue = el.getAttribute('data-value');
-                    
                     let cloneEl = document.createElement('div');
-                    cloneEl.className = 'drag-clone math-number';
-                    cloneEl.innerText = dragValue;
+                    cloneEl.className = 'drag-clone math-number'; cloneEl.innerText = dragValue;
                     document.body.appendChild(cloneEl);
-                    
-                    cloneEl.style.left = e.clientX + 'px';
-                    cloneEl.style.top = e.clientY + 'px';
-                    
+                    cloneEl.style.left = e.clientX + 'px'; cloneEl.style.top = e.clientY + 'px';
                     el.setPointerCapture(e.pointerId);
-
                     activeDrags.set(e.pointerId, { element: cloneEl, value: dragValue });
                 };
 
                 el.onpointermove = function(e) {
                     if (activeDrags.has(e.pointerId)) {
                         let dragData = activeDrags.get(e.pointerId);
-                        dragData.element.style.left = e.clientX + 'px';
-                        dragData.element.style.top = e.clientY + 'px';
+                        dragData.element.style.left = e.clientX + 'px'; dragData.element.style.top = e.clientY + 'px';
                     }
                 };
 
-                el.onpointerup = handlePointerEnd;
-                el.onpointercancel = handlePointerEnd;
+                el.onpointerup = handlePointerEnd; el.onpointercancel = handlePointerEnd;
             });
         }
 
         function handlePointerEnd(e) {
             if (activeDrags.has(e.pointerId)) {
                 let dragData = activeDrags.get(e.pointerId);
-                
                 dragData.element.style.display = 'none';
                 let targetEl = document.elementFromPoint(e.clientX, e.clientY);
                 
                 if (targetEl && targetEl.classList.contains('drop-slot')) {
-                    targetEl.innerText = dragData.value;
-                    targetEl.classList.add('filled');
-
+                    targetEl.innerText = dragData.value; targetEl.classList.add('filled');
                     if(targetEl.classList.contains('slot-borrow')) {
                         let currentWrapper = targetEl.closest('.algo-cell-wrapper');
                         if(currentWrapper && currentWrapper.previousElementSibling) {
                             let prevCell = currentWrapper.previousElementSibling.querySelector('.algo-cell');
                             if(prevCell && !isNaN(parseInt(prevCell.innerText)) && !prevCell.classList.contains('crossed-out')) {
                                 let val = parseInt(prevCell.innerText);
-                                if(val > 0) {
-                                    prevCell.innerText = val - 1;
-                                    prevCell.classList.add('crossed-out');
-                                }
+                                if(val > 0) { prevCell.innerText = val - 1; prevCell.classList.add('crossed-out'); }
                             }
                         }
                     }
                 }
-                
-                if (dragData.element.parentNode) {
-                    dragData.element.parentNode.removeChild(dragData.element);
-                }
-                activeDrags.delete(e.pointerId);
-                e.target.releasePointerCapture(e.pointerId);
+                if (dragData.element.parentNode) dragData.element.parentNode.removeChild(dragData.element);
+                activeDrags.delete(e.pointerId); e.target.releasePointerCapture(e.pointerId);
             }
         }
 
@@ -833,9 +819,9 @@
             openModal(`
                 <h3 class="text-center">Puzzles de Suporte</h3>
                 <div class="flex-container" style="flex-direction:column; gap:10px;">
-                    <button class="btn-paper" style="border:1px solid #ccc; border-radius:6px;" onclick="activatePuzzle('free')">Rascunho Livre</button>
-                    <button class="btn-paper" style="border:1px solid #ccc; border-radius:6px;" onclick="activatePuzzle('soma')">Contador de Agrupamento</button>
-                    <button class="btn-paper" style="border:1px solid #ccc; border-radius:6px;" onclick="activatePuzzle('pitagoras')">Tabela de Pitágoras</button>
+                    <button class="btn-paper" style="padding:10px; font-size:14pt;" onclick="activatePuzzle('free')">Rascunho Livre</button>
+                    <button class="btn-paper" style="padding:10px; font-size:14pt;" onclick="activatePuzzle('soma')">Contador de Agrupamento</button>
+                    <button class="btn-paper" style="padding:10px; font-size:14pt;" onclick="activatePuzzle('pitagoras')">Tabela de Pitágoras</button>
                 </div>
             `);
         }
@@ -855,8 +841,7 @@
 
         function buildSomaPuzzles() {
             ['soma-grid-1', 'soma-grid-2'].forEach(id => {
-                let g = document.getElementById(id);
-                if(!g) return;
+                let g = document.getElementById(id); if(!g) return;
                 for(let r=0; r<3; r++) {
                     let row = document.createElement('div'); row.className = "grid-row";
                     for(let c=0; c<3; c++) {
@@ -870,8 +855,7 @@
 
         function buildGincanaGrids() {
             for(let i=1; i<=3; i++) {
-                let container = document.getElementById('gincana-grids-' + i);
-                if(!container) continue;
+                let container = document.getElementById('gincana-grids-' + i); if(!container) continue;
                 container.innerHTML = "";
                 for(let g=0; g<2; g++) {
                     let grid = document.createElement('div'); grid.className = "counter-grid";
@@ -889,8 +873,7 @@
         }
 
         function buildPitagorasMatrix() {
-            const matrix = document.getElementById('pitagoras-matrix');
-            if(!matrix) return;
+            const matrix = document.getElementById('pitagoras-matrix'); if(!matrix) return;
             matrix.innerHTML = "";
             let top = document.createElement('tr'); top.appendChild(document.createElement('th'));
             for(let i=1; i<=9; i++) { let th = document.createElement('th'); th.innerText = i; th.dataset.col = i; top.appendChild(th); }
@@ -899,15 +882,11 @@
             for(let r=1; r<=9; r++) {
                 let row = document.createElement('tr'); 
                 let th = document.createElement('th'); th.innerText = r; th.dataset.row = r; row.appendChild(th);
-                
                 for(let c=1; c<=9; c++) {
-                    let td = document.createElement('td'); td.innerText = r * c;
-                    td.dataset.row = r; td.dataset.col = c;
-                    
+                    let td = document.createElement('td'); td.innerText = r * c; td.dataset.row = r; td.dataset.col = c;
                     td.onclick = function() {
                         document.querySelectorAll('.pitagoras-table td, .pitagoras-table th').forEach(el => { el.classList.remove('py-active', 'py-intersect'); });
-                        let clickRow = this.dataset.row;
-                        let clickCol = this.dataset.col;
+                        let clickRow = this.dataset.row; let clickCol = this.dataset.col;
                         document.querySelectorAll(`.pitagoras-table td, .pitagoras-table th`).forEach(el => {
                             if(el.dataset.row === clickRow || el.dataset.col === clickCol) { el.classList.add('py-active'); }
                         });
@@ -919,7 +898,6 @@
             }
         }
 
-        // --- PONTE KODULAR SIMULADA ---
         function sendToKodular(prefix, value) {
             if (window.AppInventor && window.AppInventor.setWebViewString) { window.AppInventor.setWebViewString(prefix + value);
             } else { console.log("Kodular:", prefix + value); }
